@@ -1,5 +1,9 @@
 package ua.od.onpu;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
+
 public class Categories extends Age_categories {
 
     private int id;
@@ -29,6 +33,7 @@ public class Categories extends Age_categories {
         this.id = id;
     }
 
+
     public void setId_age_cat(int id_age_cat) {
         this.id_age_cat = id_age_cat;
     }
@@ -51,15 +56,30 @@ public class Categories extends Age_categories {
         return i;
     }
 
+    public int man_max(ArrayList<Categories> categ) {
+        int value =0;
+
+        Iterator<Categories> it = categ.iterator();
+        while (it.hasNext()) {
+            Categories c = it.next();
+            char[] ch = c.getWieght().toCharArray();
+            if ( c.getGender().equals("M") && ch[0] == '+') {
+                value = c.getId();
+                break;
+            }
+        }
+         return value;
+
+    }
+
     @Override
     public String toString() {
         return
                 "id=" + id +
-                ", id_age_cat=" + id_age_cat +
-                ", gender='" + gender + '\'' +
-                ", wieght='" + wieght ;
+                        ", id_age_cat=" + id_age_cat +
+                        ", gender='" + gender + '\'' +
+                        ", wieght='" + wieght;
     }
-
 
 
 }

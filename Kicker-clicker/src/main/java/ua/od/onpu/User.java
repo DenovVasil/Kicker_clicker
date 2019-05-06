@@ -49,7 +49,7 @@ public class User {
         this.club = club;
     }
 
-    public void setGender(String gendor) {
+    public void setGender(String gender) {
         this.gender = gender;
     }
 
