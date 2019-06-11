@@ -143,7 +143,7 @@ public class App {
                         " gender= " + f.getFk_user().getGender() +
                         " categ= " + f.getFk_categor().getId()+
                         " wieght= "+ f.getFk_categor().getWieght());
-                
+
             }
 
             System.out.println("+++++++======map_test");
