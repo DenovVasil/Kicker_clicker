@@ -108,13 +108,7 @@ public class Form {
     public String toString() {
         return
                 "id= " + id;
-//                +" name "+getFk_user().getName()+
-//                " wieght=" + wieght +
-//                " disceplin=" + disceplin  +
-//                " date_of_comp= " + fk_competit.getDate_of_comp() +
-//                " date_of_birth=" + getFk_user().getDate_of_birth() +
-//                " fk_age_categ=" + fk_age_categ.getId() +
-//                " fk_categor.id=" + fk_categor.getId();
+
     }
 
     /*
@@ -134,6 +128,7 @@ public class Form {
                         f.parsAge() <= age.getMax_age()) {
                     f.setFk_age_categ(new Age_categories());
                     f.getFk_age_categ().setId(age.getId());
+                    f.getFk_age_categ().setName(age.getName());
                     break;
 
                 }
@@ -146,7 +141,7 @@ public class Form {
 
     //wieght categ     обосновать его
     //ArrayList<Form> тип
-    public void determin_categ(ArrayList<Form> lf, Map<Integer, ArrayList<Categories>> mCateg) {
+    public void determine_categ(ArrayList<Form> lf, Map<Integer, ArrayList<Categories>> mCateg) {
         ArrayList<Categories> al = new ArrayList<Categories>();
         Iterator<Form> it_f = lf.iterator();
         Iterator<Categories> it_c;
@@ -154,28 +149,32 @@ public class Form {
             Form f = it_f.next();
             if (mCateg.containsKey(f.getFk_age_categ().getId())) {   // не оч надо,или можно бросить illigual arg ex
                 it_c = mCateg.get(f.getFk_age_categ().getId()).iterator(); // итератор для нужной колекции (по возросту)
-                f.setFk_categor(new Categories());  //это хорошо, или тут проблема
+               // f.setFk_categor(new Categories());
                 al.clear();
                 while (it_c.hasNext()) {
                     Categories c = it_c.next();
                     // условие веса равности к категории
                     if (c.getGender().equals(f.getFk_user().getGender()) &&
                             f.getWieght() == c.parsWieght()) {
-                        f.getFk_categor().setId(c.getId());
+                        f.setFk_categor(c);
+//                        f.getFk_categor().setId(c.getId());
+//                        f.getFk_categor().setWieght(c.getWieght());
                         break;
                     }
                     if (c.getGender().equals(f.getFk_user().getGender()) &&
                             f.getWieght() < c.parsWieght()) {
                         al.add(c);
-                        f.getFk_categor().setId(min(al));
+                        f.setFk_categor(min(al));
+                        //f.getFk_categor().setId(min(al));//
+
 
                     }
                     if (c.getGender().equals(f.getFk_user().getGender()) && // возврат абсолюта только для W
+                            (!it_c.hasNext() && al.size() == 0)) {
+                        f.setFk_categor(c);
+                    } else if (f.getFk_user().getGender().equals("M") &&
                             (it_c.hasNext() == false && al.size() == 0)) {
-                        f.getFk_categor().setId(c.getId());
-                    }else if(f.getFk_user().getGender().equals("M") &&
-                            (it_c.hasNext() == false && al.size() == 0)){
-                        f.getFk_categor().setId(c.man_max(mCateg.get(f.getFk_age_categ().getId())));
+                        f.setFk_categor(c.man_max(mCateg.get(f.getFk_age_categ().getId())));
                     }
                 }
             }
@@ -185,7 +184,124 @@ public class Form {
 
 
     // даже не тестил с пом sublist
-    public int min(ArrayList<Categories> categ) {
+
+    public Categories min(ArrayList<Categories> categ) { // кажется тут одно лишнее сравнение
+        int min_wieght = categ.get(0).parsWieght();
+        Categories min_ob = categ.get(0);
+
+        Iterator<Categories> it = categ.iterator();
+       // Categories c = it.next();
+        while (it.hasNext()) {
+           Categories  c = it.next();
+            if (c.parsWieght() < min_wieght) {
+                min_wieght = c.parsWieght();
+                min_ob = c;
+            }
+        }
+
+        return min_ob;
+    }
+
+
+    public Map<String, ArrayList<Form>> sort_by_categ(ArrayList<Form> fList) {
+
+        Map<String, ArrayList<Form>> sortForm = new HashMap<>();
+        String str;
+
+
+        Iterator<Form> it = fList.iterator();
+
+        while (it.hasNext()) {
+            Form f = it.next();
+            str = "" + f.getFk_categor().getId() + f.getDisceplin();
+
+            if (sortForm.containsKey(str)) {
+                sortForm.get(str).add(f);
+            } else {
+                sortForm.put(str, new ArrayList<>());
+                sortForm.get(str).add(f);
+            }
+
+        }
+
+        return sortForm;
+    }
+
+    //имя, фамилия, раздел, возраст, весовая
+    public void show_singl(ArrayList<Age_categories> lAge,
+                           Map<Integer, ArrayList<Categories>> mCat) {
+        String aCateg_name = "";
+        String categ = "";
+        for (Age_categories age : lAge) {
+            if (age.getId() == fk_age_categ.getId()) {
+                aCateg_name = age.getName();
+            }
+        }
+
+        Collection<Integer> col = mCat.keySet();
+        Iterator<Integer> it = col.iterator();
+
+        while (it.hasNext()) {
+            Integer a = it.next();
+            if (fk_age_categ.getId() == a)
+                for (Categories c : mCat.get(a)) {
+                    if (getFk_categor().getId() == c.getId()) {
+                        categ = c.getWieght();
+                    }
+                }
+        }
+        System.out.println(getFk_user().getName() + " " +
+                getFk_user().getSurname() + " " +
+                disceplin + " " +     //f.getDisceplin()+ " "
+                aCateg_name + " " +    //  getFk_age_categ().getId()
+                categ);
+    }
+
+
+}
+/*
+    public void determine_categ(ArrayList<Form> lf, Map<Integer, ArrayList<Categories>> mCateg) {
+        ArrayList<Categories> al = new ArrayList<Categories>();
+        Iterator<Form> it_f = lf.iterator();
+        Iterator<Categories> it_c;
+        while (it_f.hasNext()) {
+            Form f = it_f.next();
+            if (mCateg.containsKey(f.getFk_age_categ().getId())) {   // не оч надо,или можно бросить illigual arg ex
+                it_c = mCateg.get(f.getFk_age_categ().getId()).iterator(); // итератор для нужной колекции (по возросту)
+                f.setFk_categor(new Categories());
+                al.clear();
+                while (it_c.hasNext()) {
+                    Categories c = it_c.next();
+                    // условие веса равности к категории
+                    if (c.getGender().equals(f.getFk_user().getGender()) &&
+                            f.getWieght() == c.parsWieght()) {
+                        f.getFk_categor().setId(c.getId());
+                        f.getFk_categor().setWieght(c.getWieght());
+                        break;
+                    }
+                    if (c.getGender().equals(f.getFk_user().getGender()) &&
+                            f.getWieght() < c.parsWieght()) {
+                        al.add(c);
+                        f.getFk_categor().setId(min(al));
+
+
+                    }
+                    if (c.getGender().equals(f.getFk_user().getGender()) && // возврат абсолюта только для W
+                            (it_c.hasNext() == false && al.size() == 0)) {
+                        f.getFk_categor().setId(c.getId());
+                    } else if (f.getFk_user().getGender().equals("M") &&
+                            (it_c.hasNext() == false && al.size() == 0)) {
+                        f.getFk_categor().setId(c.man_max(mCateg.get(f.getFk_age_categ().getId())));
+                    }
+                }
+            }
+
+        }
+    }
+ */
+
+ /*
+    public int min(ArrayList<Categories> categ) { // кажется тут одно лишнее сравнение
         int min_wieght = categ.get(0).parsWieght();
         int min_id = categ.get(0).getId();
         Iterator<Categories> it = categ.iterator();
@@ -199,9 +315,6 @@ public class Form {
 
         return min_id;
     }
-
-}
-//return null;
-
+    */
 
 

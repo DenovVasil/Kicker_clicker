@@ -56,15 +56,15 @@ public class Categories extends Age_categories {
         return i;
     }
 
-    public int man_max(ArrayList<Categories> categ) {
-        int value =0;
+    public Categories man_max(ArrayList<Categories> categ) {
+        Categories value=null;
 
         Iterator<Categories> it = categ.iterator();
         while (it.hasNext()) {
             Categories c = it.next();
             char[] ch = c.getWieght().toCharArray();
             if ( c.getGender().equals("M") && ch[0] == '+') {
-                value = c.getId();
+                value = c;
                 break;
             }
         }
@@ -83,3 +83,21 @@ public class Categories extends Age_categories {
 
 
 }
+
+/*
+public int man_max(ArrayList<Categories> categ) {
+        int value =0;
+
+        Iterator<Categories> it = categ.iterator();
+        while (it.hasNext()) {
+            Categories c = it.next();
+            char[] ch = c.getWieght().toCharArray();
+            if ( c.getGender().equals("M") && ch[0] == '+') {
+                value = c.getId();
+                break;
+            }
+        }
+         return value;
+
+    }
+ */
